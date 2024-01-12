@@ -9,7 +9,5 @@ export function createDatabase() {
         port: 3306,
         localAddress: '127.0.0.1:3306',
     })
-
-    console.log(pool)
     return pool;
 }
