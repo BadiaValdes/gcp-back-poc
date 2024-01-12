@@ -1,6 +1,7 @@
 import { IUserService } from './userService.interface'
 import { logger } from '../../../helpers/logger'
 import { createDatabase } from '../../../helpers/connection-bd'
+import { IUser } from '../interfaces/user.interface'
 
 class UserService implements IUserService {
   // eslint-disable-line
@@ -21,6 +22,21 @@ class UserService implements IUserService {
     pool.query(query, [], (err, result) => {
       if (err) throw err
         return 'asd';
+    })
+  }
+
+  async createUsers (req: IUser): Promise<any> {
+    const user = {
+      name: req.name,
+      email: req.email,
+      dni: req.dni,
+      photo: req.photo
+    }
+    const pool = createDatabase()
+    const query = 'INSERT INTO authors SET ?'
+    pool.query(query, user, (err, result) => {
+      if (err) throw err
+      return result;
     })
   }
 }

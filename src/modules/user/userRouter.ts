@@ -17,6 +17,17 @@ class UserRouter implements IRouter{// eslint-disable-line
                 throw err;
             }
         });
+        router.post('/', async (req: Request, res: Response) => {
+            // eslint-disable-next-line no-useless-catch
+            try {
+                //const quote = await userService.getRandomTest();
+
+                const quote = await userService.createUsers(req.body);
+                return res.send(quote);
+            } catch (err) {
+                throw err;
+            }
+        });
         router.get('/create-table', async (req: Request, res: Response) => {
             // eslint-disable-next-line no-useless-catch
             try {
