@@ -3,11 +3,26 @@ import cors from 'cors';
 import { ServerInterface } from './app.interface';
 import baseRouter from '../modules/baseRouter'
 import multer from 'multer';
+import { transporter } from '../helpers/email';
 
 class Server implements ServerInterface {// eslint-disable-line
 
   async server(): Promise<express.Application> {
     const app = express();
+    let mailOptions = {
+      from: "jsantana@soaint.com",
+      to: "jsantana@soaint.com",
+      subject: 'Nodemailer Project',
+      text: 'Hi from your nodemailer project'
+  };
+    
+  transporter.sendMail(mailOptions, function(err, data) {
+      if (err) {
+        console.log("Error " + err);
+      } else {
+        console.log("Email sent successfully");
+      }
+    });
     const upload = multer();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));

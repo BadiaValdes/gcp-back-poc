@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { IRouter } from './router.interface';
 import userRouter from './user/userRouter'
+import loginRouter from './login/loginRouter';
 
 // Init router
 const router = Router();
@@ -8,6 +9,7 @@ const router = Router();
 class BaseRouter implements IRouter{// eslint-disable-line
     get routes(){
         router.use('/users', userRouter.routes);
+        router.use('/login', loginRouter.routes);
         return router;
     }
 }
