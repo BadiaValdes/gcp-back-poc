@@ -16,13 +16,13 @@ class Server implements ServerInterface {// eslint-disable-line
       text: 'Hi from your nodemailer project'
   };
     
-  transporter.sendMail(mailOptions, function(err, data) {
+  /*transporter.sendMail(mailOptions, function(err, data) {
       if (err) {
         console.log("Error " + err);
       } else {
         console.log("Email sent successfully");
       }
-    });
+    });*/
     const upload = multer();
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));

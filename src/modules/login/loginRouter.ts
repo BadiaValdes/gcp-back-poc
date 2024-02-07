@@ -14,7 +14,39 @@ class LoginRouter implements IRouter {
           } catch (err) {
             return res.status(err.status).send(err)
           }
-    })
+    }),
+    router.post('/change-password', async (req: Request, res: Response) => {
+      try {
+          const quote = await loginService.asyncUpdatePassword(req.body.password)
+          return res.status(quote.status).send(quote)
+        } catch (err) {
+          return res.status(err.status).send(err)
+        }
+    }),
+    router.get('/loginWithPopup', async (req: Request, res: Response) => {
+      try {
+          const quote = await loginService.loginWithPopup()
+          return res.status(200)
+        } catch (err) {
+          return res.status(500)
+        }
+    }),
+    router.post('/userInformation', async (req: Request, res: Response) => {
+      try {
+          const quote = await loginService.getUserInformation()
+          return res.status(200).send(quote)
+        } catch (err) {
+          return res.status(err.status).send(err)
+        }
+    }),
+    router.post('/multiFactor', async (req: Request, res: Response) => {
+      try {
+          const quote = await loginService.multiFactor()
+          return res.status(200)
+        } catch (err) {
+          return res.status(500)
+        }
+  })
     return router
   }
 }
