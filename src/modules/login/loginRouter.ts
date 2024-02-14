@@ -15,6 +15,14 @@ class LoginRouter implements IRouter {
             return res.status(err.status).send(err)
           }
     })
+    router.get('/2', async (req: Request, res: Response) => {
+      try {
+          const quote = await loginService.login2(req.body)
+          return res.status(quote.status).send(quote)
+        } catch (err) {
+          return res.status(err.status).send(err)
+        }
+  })
     return router
   }
 }
