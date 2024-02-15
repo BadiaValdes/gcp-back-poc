@@ -8,10 +8,10 @@ export const multer = Multer({
   },
 });
 
-let projectId = "cdt-principal"; // Get this from Google Cloud
-let keyFilename = "./cdt-principal.json"; // Get this from Google Cloud -> Credentials -> Service Accounts
+let projectId = ""; // Get this from Google Cloud
+let keyFilename = ""; // Get this from Google Cloud -> Credentials -> Service Accounts
 const storage = new Storage({
   projectId,
   keyFilename,
 });
-export const bucket = storage.bucket("buckets-upload-file"); // Get this from Google Cloud -> Storage
+export const bucket = storage.bucket(""); // Get this from Google Cloud -> Storage

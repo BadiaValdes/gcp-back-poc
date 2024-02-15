@@ -8,7 +8,7 @@ const router = Router();
 
 class BaseRouter implements IRouter{// eslint-disable-line
     get routes(){
-        router.use('/users', userRouter.routes);
+        // router.use('/users', userRouter.routes);
         router.use('/login', loginRouter.routes);
         return router;
     }
