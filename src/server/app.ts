@@ -26,7 +26,8 @@ class Server implements ServerInterface {// eslint-disable-line
     });*/
     const upload = multer();
     app.use(express.json());
-    app.use(authMiddleware);
+    app.use(cors());
+    //app.use(authMiddleware);
     app.use(express.urlencoded({ extended: true }));
     app.use(upload.single('file'));
     app.use('/api/v1', baseRouter.routes);//setting up base route
@@ -34,7 +35,6 @@ class Server implements ServerInterface {// eslint-disable-line
     app.get("/", (req, res) => {
       res.send("Welcome to express-create application! ");
     });
-    app.use(cors());
     return app;
   }
 }
