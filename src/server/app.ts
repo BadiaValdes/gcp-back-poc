@@ -34,6 +34,7 @@ class Server implements ServerInterface {
     const upload = multer();
     app.use(express.json());
     app.use("/api/v1/folios", authMiddleware);
+    app.use(cors());
     app.use(express.urlencoded({ extended: true }));
     app.use(upload.single("file"));
     app.use("/api/v1", baseRouter.routes); //setting up base route
@@ -41,7 +42,6 @@ class Server implements ServerInterface {
     app.get("/", (req, res) => {
       res.send("Welcome to express-create application! ");
     });
-    app.use(cors());
     return app;
   }
 }

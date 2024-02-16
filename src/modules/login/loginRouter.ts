@@ -64,6 +64,14 @@ class LoginRouter implements IRouter {
           return res.status(500);
         }
       });
+      router.post("/changePassword", async (req: Request, res: Response) => {
+        try {
+          const quote = await loginService.changePassword(req.body.email);
+          return res.status(200);
+        } catch (err) {
+          return res.status(500);
+        }
+      });
     return router;
   }
 }
