@@ -15,7 +15,7 @@
   "include": [
     "src",
     "test"
-  ],
+, "swagger"  ],
   "exclude": [
     "node_modules"
   ]
