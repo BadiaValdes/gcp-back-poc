@@ -16,7 +16,7 @@ import {
   RecaptchaVerifier,
   getMultiFactorResolver,
   signInWithRedirect,
-  sendPasswordResetEmail,
+    sendPasswordResetEmail,
 } from 'firebase/auth'
 import { app } from '../../../helpers/init-firebase'
 import { successResponse } from 'src/helpers/responseType'
