@@ -54,3 +54,6 @@ schema.gql
 
 #npm
 .npmrc
+
+#env
+.env
