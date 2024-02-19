@@ -5,8 +5,10 @@ import baseRouter from "../modules/baseRouter";
 import multer from "multer";
 import { transporter } from "../helpers/email";
 import authMiddleware from "../middleware/auth.middleware";
-import { serve, setup } from "swagger-ui-express";
-import json from "../../swagger/swagger-output.json";
+
+// swagger
+import * as swagger from "swagger-express-ts";
+import { SwaggerDefinitionConstant } from "swagger-express-ts";
 
 class Server implements ServerInterface {
   // eslint-disable-line
@@ -20,6 +22,8 @@ class Server implements ServerInterface {
       text: "Hi from your nodemailer project",
     };
 
+    // Swagger
+
     /*transporter.sendMail(mailOptions, function(err, data) {
       if (err) {
         console.log("Error " + err);
@@ -28,10 +32,26 @@ class Server implements ServerInterface {
       }
     });*/
 
-    // Swagger
-    app.use("/doc", serve, setup(json));
 
     const upload = multer();
+    // Swagger
+    app.use('/api-docs/swagger', express.static('swagger'));
+    app.use('/api-docs/swagger/assets', express.static('node_modules/swagger-ui-dist'));
+    app.use(swagger.express({
+      definition : {
+        info : {
+            title : "My api" ,
+            version : "1.0"
+        } ,
+        externalDocs : {
+            url : "My url"
+        },
+        basePath: '/api/v1'
+        // Models can be defined here
+    }
+    }))
+    // End swagger
+
     app.use(express.json());
     app.use("/api/v1/folios", authMiddleware);
     app.use(cors());

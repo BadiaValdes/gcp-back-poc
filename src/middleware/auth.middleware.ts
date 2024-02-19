@@ -18,6 +18,7 @@ const authMiddleware = async (
     projectId: "cdt-principal",
   });
 
+
   admin
     .auth()
     .verifyIdToken(token)

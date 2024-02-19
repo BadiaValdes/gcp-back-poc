@@ -2,12 +2,19 @@ import { Request, Response, Router } from 'express'
 import { IRouter } from '../router.interface'
 import userService from './services/userService'
 import userSchema from './schemas/userSchema'
+import { ApiOperationGet, ApiPath } from 'swagger-express-ts'
 
 const router = Router()
 
 
+@ApiPath({
+  path:'/users',
+  name: 'Users'
+})
 class UserRouter implements IRouter {
   // eslint-disable-line
+
+
   get routes() {
     router.get('/', async (req: Request, res: Response) => {
       // eslint-disable-next-line no-useless-catch
