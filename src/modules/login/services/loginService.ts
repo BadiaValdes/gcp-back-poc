@@ -18,8 +18,10 @@ import {
   signInWithRedirect,
     sendPasswordResetEmail,
 } from 'firebase/auth'
-import { app } from '../../../helpers/init-firebase'
+import { app, firebaseAdmin } from '../../../helpers/init-firebase'
 import { successResponse } from 'src/helpers/responseType'
+import * as admin from 'firebase-admin'
+require('firebase-admin/auth')
 
 class LoginService implements ILoginService {
   // eslint-disable-line
@@ -45,33 +47,11 @@ class LoginService implements ILoginService {
           console.log(error)
           if (error.code == 'auth/multi-factor-auth-required') {
             // The user is a multi-factor user. Second factor challenge is required.
-            const resolver = getMultiFactorResolver(this.auth, error)
-            console.log(resolver)
-            /*const recaptchaVerifier = new RecaptchaVerifier(
-              this.auth,
-              'recaptcha-container-id',
-              undefined
-            )*/
-            resolver.hints.forEach((hint: any) => {
-              if (hint.factorId == 'phone') {
-                //const provider = new PhoneAuthProvider(this.auth)
-                //const phoneInfoOptions = {
-                //  multiFactorHint: hint,
-                //  session: resolver.session,
-                //}
-                /*provider
-                  .verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-                  .then((verificationId) => {
-                    console.log(verificationId)
-                  })*/
-              }
-            })
-            reject({ status: 400, message: resolver })
             // ...
           } else if (error.code == 'auth/wrong-password') {
             // Handle other errors such as wrong password.
           }
-          reject({ status: 400, message: error.message })
+          reject({ status: 400, message: error })
         })
     })
   }
