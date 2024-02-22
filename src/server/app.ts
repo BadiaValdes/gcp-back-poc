@@ -53,7 +53,9 @@ class Server implements ServerInterface {
     // End swagger
 
     app.use(express.json());
-    app.use(cors());
+    app.use(cors({
+      credentials: true
+    }));
     app.use("/api/v1/folios", authMiddleware);
     app.use(express.urlencoded({ extended: true }));
     app.use(upload.single("file"));
