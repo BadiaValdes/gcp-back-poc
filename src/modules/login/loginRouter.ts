@@ -72,6 +72,14 @@ class LoginRouter implements IRouter {
           return res.status(500);
         }
       });
+      router.post("/verifyCode", async (req: Request, res: Response) => {
+        try {
+          const quote = await loginService.verifyToken(req.body.token);
+          return res.status(200);
+        } catch (err) {
+          return res.status(500);
+        }
+      });
     return router;
   }
 }
