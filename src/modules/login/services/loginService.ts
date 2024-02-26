@@ -22,6 +22,9 @@ import { app, firebaseAdmin } from '../../../helpers/init-firebase'
 import { successResponse } from 'src/helpers/responseType'
 import * as admin from 'firebase-admin'
 require('firebase-admin/auth')
+import speakeasy, { GeneratedSecret } from 'speakeasy';
+import qrcode from 'qrcode';
+import { transporter } from '../../../helpers/email'
 
 class LoginService implements ILoginService {
   // eslint-disable-line
@@ -30,6 +33,7 @@ class LoginService implements ILoginService {
   auth = getAuth(app)
   user: User
   userCredential: UserCredential
+  secret: GeneratedSecret;
 
   async login(body: any): Promise<any> {
     return new Promise<successResponse>((resolve, reject) => {
@@ -37,7 +41,7 @@ class LoginService implements ILoginService {
         email: body.email,
         password: body.password,
       }
-      signInWithEmailAndPassword(this.auth, login.email, login.password)
+      /*signInWithEmailAndPassword(this.auth, login.email, login.password)
         .then((userCredential) => {
           this.userCredential = userCredential
           this.user = userCredential.user
@@ -52,7 +56,12 @@ class LoginService implements ILoginService {
             // Handle other errors such as wrong password.
           }
           reject({ status: 400, message: error })
-        })
+        })*/
+      this.sendCodeEmai(login.email).then(() => {
+        resolve({ status: 200, body: 'HOLA', message: 'Login exitosamente' })
+      }).catch((error) => {
+        reject({ status: 400, message: error.message })
+      });
     })
   }
 
@@ -150,6 +159,46 @@ class LoginService implements ILoginService {
           reject({ status: 400, message: error.message })
         })
     })
+  }
+
+  sendCodeEmai (email: string) {
+    return new Promise<successResponse>((resolve, reject) => {
+      this.secret = speakeasy.generateSecret({ length: 20 })
+      qrcode.toDataURL(this.secret.otpauth_url, function (err, image_data) {
+        const sent = image_data;
+        const mailOptions = {
+          from: 'jsantana@soaint.com',
+          to: email,
+          subject: 'Nodemailer Project',
+            text: 'Hello',
+            html: '<img src="' + sent + '"></img>',
+            attachments: [
+                {
+                    filename: 'qrcode.png',
+                    path: sent
+                }
+            ]
+        }
+  
+        transporter.sendMail(mailOptions, function (err: any, data: any) {
+          if (err) {
+            console.log('Error ' + err)
+          } else {
+            console.log('Email sent successfully')
+          }
+        })
+        return resolve({ status: 200, body: 'HOLA', message: 'envio decorreo' })
+      })
+    })
+  }
+
+  verifyToken(token: string) {
+    const verify = speakeasy.totp.verify({
+      secret: this.secret.base32,
+      encoding: 'base32',
+      token: token
+  } )
+  console.log(verify)
   }
 }
 

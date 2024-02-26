@@ -17,7 +17,6 @@ const authMiddleware = async (
   
   console.log("good");
 
-
   firebaseAdmin
     .auth()
     .verifyIdToken(token)
