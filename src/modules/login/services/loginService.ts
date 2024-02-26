@@ -27,6 +27,9 @@ import qrcode from "qrcode";
 import { transporter } from "../../../helpers/email";
 import { IResponseBody } from "src/interfaces/response.interface";
 import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
+import { response } from "express";
+import { rejects } from "assert";
+import { DB_DUMMY } from "src/helpers/db-dummy";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {
@@ -38,46 +41,27 @@ class LoginService implements ILoginService {
   userCredential: UserCredential;
   // secret: GeneratedSecret;
 
-  async login(body: any): Promise<any> {
+  async login(body: any): Promise<successResponse> {
     const login = {
       email: body.email,
       password: body.password,
     };
 
-    const code = this.sendCodeEmail(login.email);
-
-    return new Promise<string>((resolve, reject) => {
-      resolve(code);
+    return new Promise<successResponse>((resolve, reject) => {
+      signInWithEmailAndPassword(this.auth, login.email, login.password)
+        .then((userCredential) => {
+          this.userCredential = userCredential;
+          this.user = userCredential.user;
+          resolve({
+            status: 200,
+            body: userCredential,
+            message: "Login exitosamente",
+          });
+        })
+        .catch((error: any) => {
+          reject({ status: 400, message: error });
+        });
     });
-
-    // return new Promise<string>((resolve, reject) => {
-
-    //   /*signInWithEmailAndPassword(this.auth, login.email, login.password)
-    //     .then((userCredential) => {
-    //       this.userCredential = userCredential
-    //       this.user = userCredential.user
-    //       resolve({ status: 200, body: userCredential, message: 'Login exitosamente' })
-    //     })
-    //     .catch((error: any) => {
-    //       console.log(error)
-    //       if (error.code == 'auth/multi-factor-auth-required') {
-    //         // The user is a multi-factor user. Second factor challenge is required.
-    //         // ...
-    //       } else if (error.code == 'auth/wrong-password') {
-    //         // Handle other errors such as wrong password.
-    //       }
-    //       reject({ status: 400, message: error })
-    //     })*/
-
-    //     resolve();
-    //  return this.sendCodeEmail(login.email)
-    //     .then((code: codeResponse) => {
-    //       resolve({ body: code.code });
-    //     })
-    //     .catch((error) => {
-    //       reject({ status: 400, message: error.message });
-    //     });
-    // });
   }
 
   asyncUpdatePassword(password: string) {
@@ -182,7 +166,7 @@ class LoginService implements ILoginService {
     const now = Math.floor(Date.now() / 1000);
     const myCode = Math.floor(verificationCode.creation / 1000);
 
-    if (verificationCode.count > 3){
+    if (verificationCode.count > 3) {
       throw new Error("Máximo número de intentos alcanzado");
     }
 
@@ -196,6 +180,16 @@ class LoginService implements ILoginService {
     }
 
     return true;
+  }
+
+  getUser(email: string): Promise<boolean> {
+    return new Promise<boolean>((response, reject) => {
+      try {
+        response(DB_DUMMY.filter((user) => user.email == email)[0].dobleFac);
+      } catch (error) {
+        reject(false);
+      }
+    });
   }
 }
 
