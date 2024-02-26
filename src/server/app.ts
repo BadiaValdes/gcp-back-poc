@@ -52,6 +52,17 @@ class Server implements ServerInterface {
     }))
     // End swagger
 
+    // Sessions
+
+    app.use(
+      session({
+        secret: 'keyboard cat',
+      })
+    );
+
+    // End sessions
+
+    // Middleware
     app.use(express.json());
     app.use(cors());
     app.use("/api/v1/folios", authMiddleware);
