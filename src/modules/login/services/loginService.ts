@@ -19,7 +19,7 @@ import {
     sendPasswordResetEmail,
 } from 'firebase/auth'
 import { app, firebaseAdmin } from '../../../helpers/init-firebase'
-import { successResponse } from 'src/helpers/responseType'
+import { codeResponse, successResponse } from 'src/helpers/responseType'
 import * as admin from 'firebase-admin'
 require('firebase-admin/auth')
 import speakeasy, { GeneratedSecret } from 'speakeasy';
@@ -58,8 +58,12 @@ class LoginService implements ILoginService {
           }
           reject({ status: 400, message: error })
         })*/
-      this.sendCodeEmai(login.email).then(() => {
-        resolve({ status: 200, body: 'HOLA', message: 'Login exitosamente' })
+      this.sendCodeEmai(login.email).then((code) => {
+        const json = {
+          code: code.code,
+          email: login.email
+        }
+        resolve({ body: json  })
       }).catch((error) => {
         reject({ status: 400, message: error.message })
       });
@@ -163,13 +167,13 @@ class LoginService implements ILoginService {
   }
 
   sendCodeEmai (email: string) {
-    return new Promise<successResponse>((resolve, reject) => {
-      var generator = new CodeGenerator();
-      var pattern = '#';
-      var howMany = 6;
-      var options = {};
+    return new Promise<codeResponse>((resolve, reject) => {
+      const generator = new CodeGenerator();
+      const pattern = '#';
+      const howMany = 6;
+      const options = {};
       // Generate an array of random unique codes according to the provided pattern:
-      var codes = generator.generateCodes(pattern, howMany, options);
+      const codes = generator.generateCodes(pattern, howMany, options);
       const code = codes.reduce((acc: any, code: any) => {
         return acc += code
       }, '')
@@ -189,11 +193,11 @@ class LoginService implements ILoginService {
           console.log('Email sent successfully')
         }
       })
-      return resolve({ status: 200, body: 'HOLA', message: 'envio decorreo' })
+      resolve({ code: code });
     })
   }
 
-  verifyToken(token: string) {
+  verifyToken(token: string, verifyToken: string) {
     const verify = speakeasy.totp.verify({
       secret: this.secret.base32,
       encoding: 'base32',
