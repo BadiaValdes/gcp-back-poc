@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import * as admin from "firebase-admin";
+//import * as admin from "firebase-admin";
+import { firebaseAdmin } from "../helpers/init-firebase";
 const authMiddleware = async (
   req: Request,
   res: Response,
@@ -7,19 +8,17 @@ const authMiddleware = async (
 ) => {
   const bearerToken = req.headers.authorization;
 
-  if (!bearerToken) {
+  const token = bearerToken.split(" ")[1];
+
+  if (!token) {
     console.log("bad");
     return res.status(401).send("No se ha autenticado en la plataforma");
   }
-  const token = bearerToken.split(" ")[1];
+  
   console.log("good");
 
-  admin.initializeApp({
-    projectId: "cdt-principal",
-  });
 
-
-  admin
+  firebaseAdmin
     .auth()
     .verifyIdToken(token)
     .then((data) => {
