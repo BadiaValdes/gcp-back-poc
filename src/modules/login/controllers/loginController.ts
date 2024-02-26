@@ -14,7 +14,10 @@ class LoginController {
 
     try {
       const code = await this.loginService.login(req.body);
-      req.session[req.body.email] = code;
+      req.session[req.body.email] = {
+        code: code,
+        creation: Date.now(),
+      };
       console.log(req.session);
       responseBody.message = "Login correcto";
     } catch (error) {
@@ -69,6 +72,34 @@ class LoginController {
     try {
       await this.loginService.sendPasswordResetMail(req.body.email);
       responseBody.message = "Correo enviado satisfactoriamente";
+    } catch (error) {
+      responseBody.status = 400;
+      responseBody.message = error;
+    }
+
+    return res.status(responseBody.status).send({
+      status: responseBody.status,
+      body: responseBody.body,
+      message: responseBody.message,
+    });
+  }
+
+  verifyTwoStepCode(req: Request, res: Response) {
+    const responseBody: IResponseBody = {
+      status: 200,
+      message: "PlaceHolder",
+    };
+
+    try {
+      const email = req.body.email;
+      const code = req.body.code;
+
+      if (!req.session[email]) {
+        throw new Error("El correo no existe");
+      }
+
+      this.loginService.verifyCode(code, req.session[email]);
+      responseBody.message = "Código verificado correctamente";
     } catch (error) {
       responseBody.status = 400;
       responseBody.message = error;

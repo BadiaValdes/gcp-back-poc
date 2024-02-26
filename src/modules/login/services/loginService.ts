@@ -22,10 +22,11 @@ import { app, firebaseAdmin } from "../../../helpers/init-firebase";
 import { codeResponse, successResponse } from "src/helpers/responseType";
 import * as admin from "firebase-admin";
 require("firebase-admin/auth");
-import speakeasy, { GeneratedSecret } from "speakeasy";
+// import speakeasy, { GeneratedSecret } from "speakeasy";
 import qrcode from "qrcode";
 import { transporter } from "../../../helpers/email";
 import { IResponseBody } from "src/interfaces/response.interface";
+import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {
@@ -35,7 +36,7 @@ class LoginService implements ILoginService {
   auth = getAuth(app);
   user: User;
   userCredential: UserCredential;
-  secret: GeneratedSecret;
+  // secret: GeneratedSecret;
 
   async login(body: any): Promise<any> {
     const login = {
@@ -43,14 +44,14 @@ class LoginService implements ILoginService {
       password: body.password,
     };
 
-    const code = this.sendCodeEmail(login.email)
+    const code = this.sendCodeEmail(login.email);
 
     return new Promise<string>((resolve, reject) => {
       resolve(code);
-    })
+    });
 
     // return new Promise<string>((resolve, reject) => {
-      
+
     //   /*signInWithEmailAndPassword(this.auth, login.email, login.password)
     //     .then((userCredential) => {
     //       this.userCredential = userCredential
@@ -174,7 +175,21 @@ class LoginService implements ILoginService {
       }
     });
 
-   return code;
+    return code;
+  }
+
+  verifyCode(code: string, verificationCode: ITwoStepCode): boolean {
+    const now = Math.floor(Date.now() / 1000);
+    const myCode = Math.floor(verificationCode.creation / 1000);
+    if (now - myCode > 180) {
+      throw new Error("El token de verificación ha expirado");
+    }
+
+    if (code != verificationCode.code) {
+      throw new Error("El código introducido es incorrecto");
+    }
+
+    return true;
   }
 }
 

@@ -10,10 +10,11 @@ import * as swagger from "swagger-express-ts";
 
 // session
 import  session from "express-session";
+import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 
 declare module 'express-session' {
   interface SessionData {
-    [key: string]: string 
+    [key: string]: ITwoStepCode,
   }
 }
 class Server implements ServerInterface {
