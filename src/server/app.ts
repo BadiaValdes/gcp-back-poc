@@ -68,7 +68,7 @@ class Server implements ServerInterface {
     app.use(
       session({
         secret: 'keyboard cat',
-      })
+      }) 
     );
 
     // End sessions
