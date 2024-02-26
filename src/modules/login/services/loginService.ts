@@ -181,11 +181,17 @@ class LoginService implements ILoginService {
   verifyCode(code: string, verificationCode: ITwoStepCode): boolean {
     const now = Math.floor(Date.now() / 1000);
     const myCode = Math.floor(verificationCode.creation / 1000);
+
+    if (verificationCode.count > 3){
+      throw new Error("Máximo número de intentos alcanzado");
+    }
+
     if (now - myCode > 180) {
       throw new Error("El token de verificación ha expirado");
     }
 
     if (code != verificationCode.code) {
+      verificationCode.count += 1;
       throw new Error("El código introducido es incorrecto");
     }
 

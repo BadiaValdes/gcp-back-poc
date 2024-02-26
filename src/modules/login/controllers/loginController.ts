@@ -17,6 +17,7 @@ class LoginController {
       req.session[req.body.email] = {
         code: code,
         creation: Date.now(),
+        count: 0,
       };
       console.log(req.session);
       responseBody.message = "Login correcto";
@@ -90,19 +91,28 @@ class LoginController {
       message: "PlaceHolder",
     };
 
-    try {
-      const email = req.body.email;
-      const code = req.body.code;
+    const email = req.body.email;
+    const code = req.body.code;
 
+    try {
       if (!req.session[email]) {
         throw new Error("El correo no existe");
       }
 
+      if (!code) {
+        throw new Error("El código no existe");
+      }
+
+      console.log(req.session[email]);
+
       this.loginService.verifyCode(code, req.session[email]);
+
       responseBody.message = "Código verificado correctamente";
     } catch (error) {
       responseBody.status = 400;
       responseBody.message = error;
+    } finally {
+      delete req.session[email];
     }
 
     return res.status(responseBody.status).send({
