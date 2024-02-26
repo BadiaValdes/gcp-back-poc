@@ -24,7 +24,8 @@ import * as admin from 'firebase-admin'
 require('firebase-admin/auth')
 import speakeasy, { GeneratedSecret } from 'speakeasy';
 import qrcode from 'qrcode';
-import { transporter } from '../../../helpers/email'
+import { transporter } from '../../../helpers/email';
+var CodeGenerator = require('node-code-generator');
 
 class LoginService implements ILoginService {
   // eslint-disable-line
@@ -163,32 +164,32 @@ class LoginService implements ILoginService {
 
   sendCodeEmai (email: string) {
     return new Promise<successResponse>((resolve, reject) => {
-      this.secret = speakeasy.generateSecret({ length: 20 })
-      qrcode.toDataURL(this.secret.otpauth_url, function (err, image_data) {
-        const sent = image_data;
-        const mailOptions = {
-          from: 'jsantana@soaint.com',
-          to: email,
-          subject: 'Nodemailer Project',
-            text: 'Hello',
-            html: '<img src="' + sent + '"></img>',
-            attachments: [
-                {
-                    filename: 'qrcode.png',
-                    path: sent
-                }
-            ]
+      var generator = new CodeGenerator();
+      var pattern = '#';
+      var howMany = 6;
+      var options = {};
+      // Generate an array of random unique codes according to the provided pattern:
+      var codes = generator.generateCodes(pattern, howMany, options);
+      const code = codes.reduce((acc: any, code: any) => {
+        return acc += code
+      }, '')
+      console.log(code)
+      console.log(codes)
+      const mailOptions = {
+        from: 'jsantana@soaint.com',
+        to: email,
+        subject: 'Nodemailer Project',
+        text: 'Este es el codigo de verificacion: ' + code
+      }
+
+      transporter.sendMail(mailOptions, function (err: any, data: any) {
+        if (err) {
+          console.log('Error ' + err)
+        } else {
+          console.log('Email sent successfully')
         }
-  
-        transporter.sendMail(mailOptions, function (err: any, data: any) {
-          if (err) {
-            console.log('Error ' + err)
-          } else {
-            console.log('Email sent successfully')
-          }
-        })
-        return resolve({ status: 200, body: 'HOLA', message: 'envio decorreo' })
       })
+      return resolve({ status: 200, body: 'HOLA', message: 'envio decorreo' })
     })
   }
 

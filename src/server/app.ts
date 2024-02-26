@@ -8,8 +8,15 @@ import authMiddleware from "../middleware/auth.middleware";
 
 // swagger
 import * as swagger from "swagger-express-ts";
-import { SwaggerDefinitionConstant } from "swagger-express-ts";
 
+// session
+import  session from "express-session";
+
+declare module 'express-session' {
+  interface SessionData {
+    [key: string]: string 
+  }
+}
 class Server implements ServerInterface {
   // eslint-disable-line
 
