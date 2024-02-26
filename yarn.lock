@@ -575,7 +575,7 @@
 
 "@types/express-session@^1.17.10":
   version "1.17.10"
-  resolved "https://registry.yarnpkg.com/@types/express-session/-/express-session-1.17.10.tgz#3a9394f1f314a4c657af3fb1cdb52f00fc207fd2"
+  resolved "https://registry.npmjs.org/@types/express-session/-/express-session-1.17.10.tgz"
   integrity sha512-U32bC/s0ejXijw5MAzyaV4tuZopCh/K7fPoUDyNbsRXHvPSeymygYD1RFL99YOLhF5PNOkzswvOTRaVHdL1zMw==
   dependencies:
     "@types/express" "*"
@@ -1877,6 +1877,11 @@ negotiator@0.6.3:
   version "0.6.3"
   resolved "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz"
   integrity sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==
+
+node-code-generator@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/node-code-generator/-/node-code-generator-1.0.3.tgz"
+  integrity sha512-4brJHtcp33dPtLPSn6VvNsfY9prpVLNTui3pgLi3sSueIxnhThV1U5XMtLv1Vf5WrOVjr2uLipM3MkNPFJ0/JA==
 
 node-fetch@^2.6.1, node-fetch@^2.6.9:
   version "2.7.0"

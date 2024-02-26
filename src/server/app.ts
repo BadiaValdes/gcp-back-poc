@@ -16,7 +16,6 @@ declare module 'express-session' {
     [key: string]: string 
   }
 }
-
 class Server implements ServerInterface {
   // eslint-disable-line
 
@@ -68,7 +67,7 @@ class Server implements ServerInterface {
     app.use(
       session({
         secret: 'keyboard cat',
-      }) 
+      })
     );
 
     // End sessions
