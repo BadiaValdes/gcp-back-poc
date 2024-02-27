@@ -3,6 +3,7 @@ import { IRouter } from './router.interface';
 import userRouter from './user/userRouter'
 import loginRouter from './login/loginRouter';
 import folioRouter from './folio/folioRouter';
+import docuSignRoutes from './docu-sign/docu-sign.routes';
 
 // Init router
 const router = Router();
@@ -12,6 +13,7 @@ class BaseRouter implements IRouter{// eslint-disable-line
         // router.use('/users', userRouter.routes);
         router.use('/login', loginRouter.routes);
         router.use('/folios', folioRouter.routes);
+        router.use('/docusign', docuSignRoutes.routes);
         return router;
     }
 }
