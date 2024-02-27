@@ -2,6 +2,7 @@ import { IResponseBody } from "src/interfaces/response.interface";
 import loginService from "../services/loginService";
 import { ILoginService } from "../services/loginService.interface";
 import { Request, Response } from "express";
+import { session } from "../../../helpers/session";
 
 class LoginController {
   loginService: ILoginService = loginService;
@@ -14,13 +15,14 @@ class LoginController {
 
     try {
       let isDobleFac = false;
-      if (!req.session[req.body.email])
+      const pp = session.find(session => session.email === req.body.email);
+      if (!pp)
         isDobleFac = await this.loginService.getUser(req.body.email);
-      if (isDobleFac && !req.session[req.body.email].verified) {
-        this.doubleFacAuth(req, res);
+      if (isDobleFac && !pp?.verified) {
+        return this.doubleFacAuth(req, res);
       } else {
         const login = await this.loginService.login(req.body);
-        delete req.session[req.body.email];
+        session.splice(session.findIndex((session) => session.email === req.body.email), 1) 
         responseBody.message = login.message;
         responseBody.body = login.body;
       }
@@ -32,6 +34,7 @@ class LoginController {
     return res.status(responseBody.status).send({
       status: responseBody.status,
       message: responseBody.message,
+      body: responseBody.body
     });
   }
 
@@ -43,19 +46,27 @@ class LoginController {
 
     try {
       const code = this.loginService.sendCodeEmail(req.body.email);
-      req.session[req.body.email] = {
+      session.push({
+        email: req.body.email,
+        code: code,
+        creation: Date.now(),
+        count: 0,
+        verified: false
+      })
+      /*req.session[req.body.email] = {
         code: code,
         creation: Date.now(),
         count: 0,
         verified: false,
-      };
-      console.log(req.session);
-      responseBody.message = "Login correcto";
+      };*/
+      responseBody.message = "Doble Factor Auth";
+      responseBody.status = 419;
     } catch (error) {
       responseBody.status = 400;
       responseBody.message = error;
     }
 
+    res.cookie('cookie', "123", { httpOnly: false });
     return res.status(responseBody.status).send({
       status: responseBody.status,
       message: responseBody.message,
@@ -125,25 +136,27 @@ class LoginController {
     const code = req.body.code;
 
     try {
-      if (!req.session[email]) {
+      const pp = session.find(session => session.email === email);
+      if (!pp) {
+        responseBody.message = "El correo no existe";
         throw new Error("El correo no existe");
       }
 
       if (!code) {
+        responseBody.message = "El código no existe";
         throw new Error("El código no existe");
       }
 
-      console.log(req.session[email]);
-
-      this.loginService.verifyCode(code, req.session[email]);
+      this.loginService.verifyCode(code, pp);
 
       responseBody.message = "Código verificado correctamente";
     } catch (error) {
       responseBody.status = 400;
       responseBody.message = error;
     } finally {
-      if (req.session[email].count > 3) {
-        delete req.session[email];
+      console.log(session.find(session => session.email === email))
+      if (session.find(session => session.email === email).count > 3) {
+        session.splice(session.findIndex((session) => session.email === req.body.email), 1)
       }
     }
 

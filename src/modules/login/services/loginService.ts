@@ -29,7 +29,7 @@ import { IResponseBody } from "src/interfaces/response.interface";
 import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 import { response } from "express";
 import { rejects } from "assert";
-import { DB_DUMMY } from "src/helpers/db-dummy";
+import { DB_DUMMY } from "../../../helpers/db-dummy";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {
@@ -167,6 +167,7 @@ class LoginService implements ILoginService {
     const myCode = Math.floor(verificationCode.creation / 1000);
 
     if (verificationCode.count > 3) {
+      console.log("Intentos de verificación excedidos");
       throw new Error("Máximo número de intentos alcanzado");
     }
 
@@ -175,9 +176,12 @@ class LoginService implements ILoginService {
     }
 
     if (code != verificationCode.code) {
+      console.log("El código introducido es incorrecto");
       verificationCode.count += 1;
       throw new Error("El código introducido es incorrecto");
     }
+
+    console.log(verificationCode)
 
     return true;
   }

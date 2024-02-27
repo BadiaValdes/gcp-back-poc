@@ -13,7 +13,7 @@ class LoginRouter implements IRouter {
       return this.loginController.login(req, res);
     });
 
-    router.post("/change-password", async (req: Request, res: Response) => {
+    router.post("/change-password-login", async (req: Request, res: Response) => {
       return await loginController.changePassword(req, res);
     });
 
@@ -26,6 +26,7 @@ class LoginRouter implements IRouter {
     });
 
     router.post("/verify-code", async (req: Request, res: Response) => {
+      console.log(req.session)
       return this.loginController.verifyTwoStepCode(req, res);
     });
 
