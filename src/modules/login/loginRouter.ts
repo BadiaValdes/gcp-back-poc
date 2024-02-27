@@ -21,6 +21,15 @@ class LoginRouter implements IRouter {
       return this.loginController.login(req, res);
     });
 
+    router.post("/user", async (req: Request, res: Response) => {
+      return this.loginController.getUser(req, res);
+    });
+
+    router.post("/user/phone", async (req: Request, res: Response) => {
+      return this.loginController.getUserPhone(req, res);
+    });
+
+
     router.post("/change-password-login", async (req: Request, res: Response) => {
       return await loginController.changePassword(req, res);
     });

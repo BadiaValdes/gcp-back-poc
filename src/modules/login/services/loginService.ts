@@ -22,6 +22,8 @@ import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 import { response } from "express";
 import { rejects } from "assert";
 import { DB_DUMMY } from "../../../helpers/db-dummy";
+import { UserRecord } from "firebase-admin/lib/auth/user-record";
+import { bodyMessages, httpCode } from "src/config/const";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {
@@ -33,10 +35,10 @@ class LoginService implements ILoginService {
   userCredential: UserCredential;
   // secret: GeneratedSecret;
 
-  async login(body: any): Promise<successResponse> {
+  async login(email: string, password: string): Promise<successResponse> {
     const login = {
-      email: body.email,
-      password: body.password,
+      email: email,
+      password: password,
     };
 
     return new Promise<successResponse>((resolve, reject) => {
@@ -44,14 +46,16 @@ class LoginService implements ILoginService {
         .then((userCredential) => {
           this.userCredential = userCredential;
           this.user = userCredential.user;
+          console.log(this.user);
+
           resolve({
             status: 200,
             body: userCredential,
-            message: "Login exitosamente",
+            message: bodyMessages.successfulLogin,
           });
         })
         .catch((error: any) => {
-          reject({ status: 400, message: error });
+          reject({ status: httpCode.BAD_REQUEST, message: error });
         });
     });
   }
@@ -64,41 +68,12 @@ class LoginService implements ILoginService {
           resolve({
             status: 200,
             body: credential,
-            message: "Cambiar password exitosamente",
+            message: bodyMessages.successfulPasswordChange,
           });
         })
         .catch((error) => {
           reject({ status: 400, message: error.message });
         });
-    });
-  }
-
-  async login2(): Promise<IResponseBody> {
-    return new Promise<IResponseBody>((resolve, reject) => {
-      const provider = new GoogleAuthProvider();
-
-      signInWithRedirect(this.auth, provider)
-        .then((result) => {
-          resolve({
-            status: 200,
-            message: "Autenticado satisfactoriamente",
-          });
-        })
-        .catch((error) => {
-          reject({
-            status: 400,
-            message: error,
-          });
-        });
-
-      // signInWithEmailAndPassword(this.auth, login.email, login.password)
-      //   .then((userCredential) => {
-      //     const user = userCredential.user
-      //     resolve({ status: 200, body: user, message: 'Login exitosamente' })
-      //   })
-      //   .catch((error) => {
-      //     reject({ status: 400, message: error.message })
-      //   })
     });
   }
 
@@ -159,18 +134,16 @@ class LoginService implements ILoginService {
     const myCode = Math.floor(verificationCode.creation / 1000);
 
     if (verificationCode.count > 3) {
-      console.log("Intentos de verificación excedidos");
-      throw new Error("Máximo número de intentos alcanzado");
+      throw new Error(bodyMessages.codeMaxAttempt);
     }
 
     if (now - myCode > 180) {
-      throw new Error("El token de verificación ha expirado");
+      throw new Error(bodyMessages.tokenExpired);
     }
 
     if (code != verificationCode.code) {
-      console.log("El código introducido es incorrecto");
       verificationCode.count += 1;
-      throw new Error("El código introducido es incorrecto");
+      throw new Error(bodyMessages.wrongCode);
     }
 
     console.log(verificationCode);
@@ -178,23 +151,30 @@ class LoginService implements ILoginService {
     return true;
   }
 
-  getUser(email: string): Promise<boolean> {
-    return new Promise<boolean>((response, reject) => {
-      try {
-        response(DB_DUMMY.filter((user) => user.email == email)[0].dobleFac);
-      } catch (error) {
-        reject(false);
-      }
-    });
+  async getUser(email: string): Promise<UserRecord> {
+    return await firebaseAdmin.auth().getUserByEmail(email);
   }
 
-  async setPhone2MFA(email: string, activate: boolean): Promise<boolean> {
+  async setPhone2MFA(
+    email: string,
+    phoneNumber: string | undefined
+  ): Promise<boolean> {
     let user = await firebaseAdmin.auth().getUserByEmail(email);
 
-    // user = await firebaseAdmin.auth().updateUser(user.uid, {
-    //   phoneNumber: "+59898335948",
-      
-    // })
+    user = await firebaseAdmin.auth().updateUser(user.uid, {
+      phoneNumber: phoneNumber,
+      multiFactor: {
+        enrolledFactors: phoneNumber
+          ? [
+              {
+                phoneNumber: phoneNumber,
+                displayName: "Work phone",
+                factorId: "phone",
+              },
+            ]
+          : null,
+      },
+    });
 
     // await firebaseAdmin.auth().createUser({
     //   displayName: "Jose Emilio",
@@ -202,7 +182,16 @@ class LoginService implements ILoginService {
     //   password: "0987654",
     //   phoneNumber: "+5358186830",
     //   uid: "jebv.informatico@gmail.com",
-    // })
+    //   multiFactor: {
+    //     enrolledFactors: [
+    //       {
+    //         phoneNumber: "+16505551234",
+    //         displayName: "Work phone",
+    //         factorId: "phone",
+    //       },
+    //     ],
+    //   },
+    // });
 
     // const mail = await firebaseAdmin.auth().generateEmailVerificationLink("jebv.informatico@gmail.com")
 
@@ -221,9 +210,7 @@ class LoginService implements ILoginService {
     //   }
     // });
 
-    console.log('emilio')
-    console.log(user)
-    return true;
+    return !!user.multiFactor;
   }
 }
 
