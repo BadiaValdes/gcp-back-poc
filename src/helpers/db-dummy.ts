@@ -5,6 +5,6 @@ export const DB_DUMMY = [
     },
     {
         email: "jebv9606@gmail.com",
-        dobleFac: false,
+        dobleFac: true,
     },
 ]

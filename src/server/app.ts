@@ -15,6 +15,7 @@ import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 declare module 'express-session' {
   interface SessionData {
     [key: string]: ITwoStepCode,
+    _dummy: string
   }
 }
 class Server implements ServerInterface {
@@ -67,6 +68,9 @@ class Server implements ServerInterface {
 
     app.use(
       session({
+        genid: function(req) {
+          return 'cb001ac6-0f01-426b-bc0c-4bee7e2fc561' // use UUIDs for session IDs
+        },
         secret: 'keyboard cat',
       })
     );

@@ -6,21 +6,33 @@ import { Request, Response } from "express";
 class LoginController {
   loginService: ILoginService = loginService;
 
+  dummy1(req: Request, res: Response) {
+    req.session["_dummy"] = "hola Mundo";
+    res.status(200).send(req.session["_dummy"]);
+  }
+
+  dummy2(req: Request, res: Response) {
+    console.log(req.session);
+    res.status(200).send(req.session["_dummy"]);
+  }
+
   async login(req: Request, res: Response) {
     const responseBody: IResponseBody = {
       status: 200,
       message: "PlaceHolder",
     };
 
+    console.log(req.session);
+
     try {
       let isDobleFac = false;
       if (!req.session[req.body.email])
         isDobleFac = await this.loginService.getUser(req.body.email);
-      if (isDobleFac && !req.session[req.body.email].verified) {
-        this.doubleFacAuth(req, res);
+      if (isDobleFac && !req.session[req.body.email]?.verified) {
+        return await this.doubleFacAuth(req, res);
       } else {
         const login = await this.loginService.login(req.body);
-        delete req.session[req.body.email];
+       
         responseBody.message = login.message;
         responseBody.body = login.body;
       }
@@ -136,15 +148,15 @@ class LoginController {
       console.log(req.session[email]);
 
       this.loginService.verifyCode(code, req.session[email]);
-
+      req.session[email].verified = true;
       responseBody.message = "Código verificado correctamente";
     } catch (error) {
       responseBody.status = 400;
       responseBody.message = error;
     } finally {
-      if (req.session[email].count > 3) {
-        delete req.session[email];
-      }
+        if (req.session[email].count > 3) {
+          delete req.session[email];
+        }
     }
 
     return res.status(responseBody.status).send({

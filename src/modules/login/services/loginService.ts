@@ -29,7 +29,7 @@ import { IResponseBody } from "src/interfaces/response.interface";
 import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 import { response } from "express";
 import { rejects } from "assert";
-import { DB_DUMMY } from "src/helpers/db-dummy";
+import { DB_DUMMY } from "../../../helpers/db-dummy";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {

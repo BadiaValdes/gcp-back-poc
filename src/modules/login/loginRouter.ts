@@ -9,6 +9,14 @@ class LoginRouter implements IRouter {
   loginController = loginController;
   // eslint-disable-line
   get routes() {
+    router.get("/dummy1", async (req: Request, res: Response) => {
+      return this.loginController.dummy1(req, res);
+    });
+
+    router.get("/dummy2", async (req: Request, res: Response) => {
+      return this.loginController.dummy2(req, res);
+    });
+
     router.post("/", async (req: Request, res: Response) => {
       return this.loginController.login(req, res);
     });
