@@ -11,6 +11,7 @@ import * as swagger from "swagger-express-ts";
 // session
 import  session from "express-session";
 import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
+import { Sessions } from "../helpers/session";
 
 declare module 'express-session' {
   interface SessionData {
@@ -65,21 +66,21 @@ class Server implements ServerInterface {
     // End swagger
 
     // Sessions
-
-    app.use(
-      session({
-        genid: function(req) {
-          return 'cb001ac6-0f01-426b-bc0c-4bee7e2fc561' // use UUIDs for session IDs
-        },
-        secret: 'keyboard cat',
-      })
-    );
-
+    Sessions.getInstance();
     // End sessions
 
     // Middleware
     app.use(express.json());
-    app.use(cors());
+    app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
+    app.use(
+      session({
+        secret: 'keyboard cat',
+        resave: false,
+        saveUninitialized: true,
+        //store: new session.MemoryStore(),
+        //cookie: { secure: false, maxAge: 3 * 24 * 60 * 60 * 1000 },
+      })
+    );
     app.use("/api/v1/folios", authMiddleware);
     app.use(express.urlencoded({ extended: true }));
     app.use(upload.single("file"));

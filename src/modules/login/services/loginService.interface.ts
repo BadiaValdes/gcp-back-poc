@@ -12,4 +12,5 @@ export interface ILoginService{
     sendPasswordResetMail(email: string):  Promise<void>;
     sendCodeEmail(email: string): string;
     verifyCode(code: string, verificationCode: ITwoStepCode): boolean;
+    setPhone2MFA(email: string, activate: boolean): Promise<boolean>;
 }

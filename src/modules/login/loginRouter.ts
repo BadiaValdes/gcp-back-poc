@@ -9,19 +9,19 @@ class LoginRouter implements IRouter {
   loginController = loginController;
   // eslint-disable-line
   get routes() {
-    router.get("/dummy1", async (req: Request, res: Response) => {
-      return this.loginController.dummy1(req, res);
-    });
+    // router.get("/dummy1", async (req: Request, res: Response) => {
+    //   return this.loginController.dummy1(req, res);
+    // });
 
-    router.get("/dummy2", async (req: Request, res: Response) => {
-      return this.loginController.dummy2(req, res);
-    });
+    // router.get("/dummy2", async (req: Request, res: Response) => {
+    //   return this.loginController.dummy2(req, res);
+    // });
 
     router.post("/", async (req: Request, res: Response) => {
       return this.loginController.login(req, res);
     });
 
-    router.post("/change-password", async (req: Request, res: Response) => {
+    router.post("/change-password-login", async (req: Request, res: Response) => {
       return await loginController.changePassword(req, res);
     });
 
@@ -34,7 +34,12 @@ class LoginRouter implements IRouter {
     });
 
     router.post("/verify-code", async (req: Request, res: Response) => {
+      console.log(req.session)
       return this.loginController.verifyTwoStepCode(req, res);
+    });
+
+    router.post("/2mfa", async (req: Request, res: Response) => {
+      return this.loginController.setPhoneAuth(req, res);
     });
 
     return router;

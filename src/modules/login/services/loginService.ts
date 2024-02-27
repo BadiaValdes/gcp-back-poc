@@ -1,7 +1,6 @@
 import { ILoginService } from "./loginService.interface";
 
 import {
-  onAuthStateChanged,
   signInWithEmailAndPassword,
   getAuth,
   User,
@@ -10,19 +9,12 @@ import {
   signInWithPopup,
   getAdditionalUserInfo,
   UserCredential,
-  multiFactor,
-  PhoneAuthProvider,
-  PhoneMultiFactorGenerator,
-  RecaptchaVerifier,
-  getMultiFactorResolver,
   signInWithRedirect,
   sendPasswordResetEmail,
+  PhoneMultiFactorGenerator,
 } from "firebase/auth";
 import { app, firebaseAdmin } from "../../../helpers/init-firebase";
 import { codeResponse, successResponse } from "src/helpers/responseType";
-import * as admin from "firebase-admin";
-require("firebase-admin/auth");
-// import speakeasy, { GeneratedSecret } from "speakeasy";
 import qrcode from "qrcode";
 import { transporter } from "../../../helpers/email";
 import { IResponseBody } from "src/interfaces/response.interface";
@@ -167,6 +159,7 @@ class LoginService implements ILoginService {
     const myCode = Math.floor(verificationCode.creation / 1000);
 
     if (verificationCode.count > 3) {
+      console.log("Intentos de verificación excedidos");
       throw new Error("Máximo número de intentos alcanzado");
     }
 
@@ -175,9 +168,12 @@ class LoginService implements ILoginService {
     }
 
     if (code != verificationCode.code) {
+      console.log("El código introducido es incorrecto");
       verificationCode.count += 1;
       throw new Error("El código introducido es incorrecto");
     }
+
+    console.log(verificationCode);
 
     return true;
   }
@@ -190,6 +186,44 @@ class LoginService implements ILoginService {
         reject(false);
       }
     });
+  }
+
+  async setPhone2MFA(email: string, activate: boolean): Promise<boolean> {
+    let user = await firebaseAdmin.auth().getUserByEmail(email);
+
+    // user = await firebaseAdmin.auth().updateUser(user.uid, {
+    //   phoneNumber: "+59898335948",
+      
+    // })
+
+    // await firebaseAdmin.auth().createUser({
+    //   displayName: "Jose Emilio",
+    //   email: "jebv.informatico@gmail.com",
+    //   password: "0987654",
+    //   phoneNumber: "+5358186830",
+    //   uid: "jebv.informatico@gmail.com",
+    // })
+
+    // const mail = await firebaseAdmin.auth().generateEmailVerificationLink("jebv.informatico@gmail.com")
+
+    // const mailOptions = {
+    //   from: "jsantana@soaint.com",
+    //   to: "jebv.informatico@gmail.com",
+    //   subject: "Bienvenido a VITALMEX",
+    //   text: mail,
+    // };
+
+    // transporter.sendMail(mailOptions, function (err: any, data: any) {
+    //   if (err) {
+    //     console.log("Error " + err);
+    //   } else {
+    //     console.log("Email sent successfully");
+    //   }
+    // });
+
+    console.log('emilio')
+    console.log(user)
+    return true;
   }
 }
 

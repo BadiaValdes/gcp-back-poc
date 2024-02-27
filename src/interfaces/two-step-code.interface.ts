@@ -3,4 +3,5 @@ export interface ITwoStepCode {
     creation: number,
     count: number,
     verified: boolean,
+    email: string
   }

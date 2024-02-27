@@ -8,6 +8,8 @@ const firebaseConfig = {
 
 export const firebaseAdmin = admin.initializeApp({
     projectId: "cdt-principal",
+    credential: admin.credential.cert("C:/Users/JE/Videos/mio/cdt-principal-d917cdc8f715.json"),
 });
   
 export const app = initializeApp(firebaseConfig);
+
