@@ -105,8 +105,10 @@ class LoginController {
 
     return res.status(responseBody.status).send({
       status: responseBody.status,
-      body: (await this.loginService.getUser(req.body.email)).phoneNumber,
-      message: responseBody.message,
+      body: {
+        phone: (await this.loginService.getUser(req.body.email)).phoneNumber ?? null
+      },
+      message: bodyMessages.successfulPhoneNumber,
     });
   }
 

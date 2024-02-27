@@ -23,7 +23,7 @@ import { response } from "express";
 import { rejects } from "assert";
 import { DB_DUMMY } from "../../../helpers/db-dummy";
 import { UserRecord } from "firebase-admin/lib/auth/user-record";
-import { bodyMessages, httpCode } from "src/config/const";
+import { bodyMessages, httpCode } from "../../../config/const";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {
