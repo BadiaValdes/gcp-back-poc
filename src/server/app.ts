@@ -9,16 +9,10 @@ import authMiddleware from "../middleware/auth.middleware";
 import * as swagger from "swagger-express-ts";
 
 // session
-import  session from "express-session";
 import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 import { Sessions } from "../helpers/session";
 
-declare module 'express-session' {
-  interface SessionData {
-    [key: string]: ITwoStepCode,
-    _dummy: string
-  }
-}
+
 class Server implements ServerInterface {
   // eslint-disable-line
 
@@ -72,15 +66,7 @@ class Server implements ServerInterface {
     // Middleware
     app.use(express.json());
     app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
-    app.use(
-      session({
-        secret: 'keyboard cat',
-        resave: false,
-        saveUninitialized: true,
-        //store: new session.MemoryStore(),
-        //cookie: { secure: false, maxAge: 3 * 24 * 60 * 60 * 1000 },
-      })
-    );
+   
     app.use("/api/v1/folios", authMiddleware);
     app.use(express.urlencoded({ extended: true }));
     app.use(upload.single("file"));

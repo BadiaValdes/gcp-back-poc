@@ -2,11 +2,13 @@ import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 
 export let session: any[] = [];
 
+export type SessionsCookies = {
+  [key: string]: ITwoStepCode;
+};
+
 export class Sessions {
   private static session: Sessions;
-  private cookies: {
-    [_key: string]: ITwoStepCode;
-  } = {};
+  private cookies: SessionsCookies = {};
   private constructor() {}
 
   public static getInstance() {
@@ -21,11 +23,11 @@ export class Sessions {
     this.cookies[key] = value;
   }
 
-  public removeData(key: string){
+  public removeData(key: string) {
     delete this.cookies[key];
   }
 
-  public getValue(key: string){
-    return this.cookies[key] ?? undefined
+  public getValue(key: string) {
+    return this.cookies[key] ?? undefined;
   }
 }

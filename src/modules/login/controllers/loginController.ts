@@ -8,6 +8,7 @@ import {
   httpCode,
   responseBodyBase,
 } from "../../../config/const";
+import { PhoneMultiFactorInfo } from "firebase-admin/lib/auth/user-record";
 
 class LoginController {
   loginService: ILoginService = loginService;
@@ -106,7 +107,7 @@ class LoginController {
     return res.status(responseBody.status).send({
       status: responseBody.status,
       body: {
-        phone: (await this.loginService.getUser(req.body.email)).phoneNumber ?? null
+        phone: ((await this.loginService.getUser(req.body.email)).multiFactor.enrolledFactors[0] as PhoneMultiFactorInfo).phoneNumber ?? null
       },
       message: bodyMessages.successfulPhoneNumber,
     });

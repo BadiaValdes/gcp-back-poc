@@ -43,7 +43,6 @@ class LoginRouter implements IRouter {
     });
 
     router.post("/verify-code", async (req: Request, res: Response) => {
-      console.log(req.session)
       return this.loginController.verifyTwoStepCode(req, res);
     });
 
