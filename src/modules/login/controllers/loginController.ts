@@ -90,7 +90,7 @@ class LoginController {
     });
   }
 
-  async getUser(req: Request, res: Response){
+  async getUser(req: Request, res: Response) {
     const responseBody: IResponseBody = { ...responseBodyBase };
 
     return res.status(responseBody.status).send({
@@ -100,14 +100,17 @@ class LoginController {
     });
   }
 
-  
-  async getUserPhone(req: Request, res: Response){
+  async getUserPhone(req: Request, res: Response) {
     const responseBody: IResponseBody = { ...responseBodyBase };
 
     return res.status(responseBody.status).send({
       status: responseBody.status,
       body: {
-        phone: ((await this.loginService.getUser(req.body.email)).multiFactor.enrolledFactors[0] as PhoneMultiFactorInfo).phoneNumber ?? null
+        phone:
+          (
+            (await this.loginService.getUser(req.body.email)).multiFactor
+              .enrolledFactors[0] as PhoneMultiFactorInfo
+          ).phoneNumber ?? null,
       },
       message: bodyMessages.successfulPhoneNumber,
     });
