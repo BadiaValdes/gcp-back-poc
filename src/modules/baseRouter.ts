@@ -1,8 +1,9 @@
 import { Router } from 'express';
-import { IRouter } from './router.interface';
-import loginRouter from './login/loginRouter';
-import folioRouter from './folio/folioRouter';
 import docuSignRoutes from './docu-sign/docu-sign.routes';
+import folioRouter from './folio/folioRouter';
+import loginRouter from './login/loginRouter';
+import { IRouter } from './router.interface';
+import userRouter from './user/userRouter';
 
 // Init router
 const router = Router();
@@ -13,6 +14,7 @@ class BaseRouter implements IRouter{// eslint-disable-line
         router.use('/login', loginRouter.routes);
         router.use('/folios', folioRouter.routes);
         router.use('/docusign', docuSignRoutes.routes);
+        router.use('/user', userRouter.routes);
         return router;
     }
 }

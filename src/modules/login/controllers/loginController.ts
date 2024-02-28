@@ -1,14 +1,14 @@
-import { IResponseBody } from "src/interfaces/response.interface";
-import loginService from "../services/loginService";
-import { ILoginService } from "../services/loginService.interface";
 import { Request, Response } from "express";
-import { Sessions, session } from "../../../helpers/session";
+import { PhoneMultiFactorInfo } from "firebase-admin/lib/auth/user-record";
+import { IResponseBody } from "src/interfaces/response.interface";
 import {
   bodyMessages,
   httpCode,
   responseBodyBase,
 } from "../../../config/const";
-import { PhoneMultiFactorInfo } from "firebase-admin/lib/auth/user-record";
+import { Sessions } from "../../../helpers/session";
+import loginService from "../services/loginService";
+import { ILoginService } from "../services/loginService.interface";
 
 class LoginController {
   loginService: ILoginService = loginService;

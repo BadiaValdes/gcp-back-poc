@@ -1,14 +1,13 @@
-import { AccountsApi, EnvelopesApi } from "docusign-esign";
-import { IDocuSignConnector } from "../interfaces/docu-sign-connector.interface";
-import { DocuSign } from "./singleton/docu-sign";
-import { IDocuSignToken } from "../interfaces/docu-sign-token.interface";
+import { EnvelopesApi } from "docusign-esign";
 import { readFileSync } from "fs";
+import { IDocuSignConnector } from "../interfaces/docu-sign-connector.interface";
+import { IDocuSignToken } from "../interfaces/docu-sign-token.interface";
+import { DocuSign } from "./singleton/docu-sign";
 
 
 export class DocuSignConnector implements IDocuSignConnector {
     private static docuSignService: IDocuSignConnector;
   private constructor() {
-    console.log("Aqui");
   }
 
   public static getDocuSignConnector(){
