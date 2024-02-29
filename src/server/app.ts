@@ -1,16 +1,14 @@
-import express from "express";
 import cors from "cors";
-import { ServerInterface } from "./app.interface";
-import baseRouter from "../modules/baseRouter";
+import express from "express";
 import multer from "multer";
 import authMiddleware from "../middleware/auth.middleware";
+import baseRouter from "../modules/baseRouter";
+import { ServerInterface } from "./app.interface";
 
 // swagger
 import * as swagger from "swagger-express-ts";
 
 // session
-import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
-import { Sessions } from "../helpers/session";
 
 
 class Server implements ServerInterface {
@@ -60,7 +58,6 @@ class Server implements ServerInterface {
     // End swagger
 
     // Sessions
-    Sessions.getInstance();
     // End sessions
 
     // Middleware

@@ -1,37 +1,54 @@
 import { Request, Response } from "express";
 import { PhoneMultiFactorInfo } from "firebase-admin/lib/auth/user-record";
-import { IResponseBody } from "src/interfaces/response.interface";
+import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 import {
   bodyMessages,
   httpCode,
   responseBodyBase,
 } from "../../../config/const";
-import { Sessions } from "../../../helpers/session";
+import sessionsImpl from "../../../helpers/sessions/impl/sessions.impl";
+import { ISessions } from "../../../helpers/sessions/sessions.interface";
+import { IResponseBody } from "../../../interfaces/response.interface";
 import loginService from "../services/loginService";
 import { ILoginService } from "../services/loginService.interface";
+import { checkJailTime } from "./auxiliars/check-jail-time";
 
 class LoginController {
   loginService: ILoginService = loginService;
+  sessionService: ISessions = sessionsImpl;
 
   async login(req: Request, res: Response) {
     const responseBody: IResponseBody = { ...responseBodyBase };
+    const pp = this.sessionService.getValue(req.body.email) as ITwoStepCode;
 
     try {
       let isDobleFac = false;
-      const pp = Sessions.getInstance().getValue(req.body.email);
-      if (!pp)
+
+      if (pp) {
+        this.checkCodeError(pp, req.body.email);
+      } else
         isDobleFac = !!(await this.loginService.getUser(req.body.email))
           .multiFactor;
-      if (!isDobleFac && !pp?.verified) {
-        return this.doubleFacAuth(req, res);
-      } else {
-        await this.loginNormalFlow(
-          responseBody,
-          req.body.email,
-          req.body.password
-        );
-      }
+
+      await this.loginNormalFlow(
+        responseBody,
+        req.body.email,
+        req.body.password
+      );
+
+      if (!isDobleFac && !pp?.verified)
+        return await this.doubleFacAuth(req, res);
     } catch (error) {
+      if (
+        error.message.code &&
+        error.message.code == "auth/invalid-credential"
+      ) {
+        this.sessionService.setValue(req.body.email, {
+          ...pp,
+          countLogin: pp.countLogin < 5 ? pp.countLogin + 1 : pp.countLogin,
+          loginError: pp.countLogin > 5 ? Date.now() : undefined,
+        } as ITwoStepCode);
+      }
       responseBody.message = error.message;
       responseBody.status = httpCode.BAD_REQUEST;
     }
@@ -121,10 +138,13 @@ class LoginController {
 
     const email = req.body.email;
     const code = req.body.code;
+    const pp = this.sessionService.getValue(email) as ITwoStepCode;
+
+    console.log(pp);
 
     try {
       // const pp = session.find((session) => session.email === email);
-      const pp = Sessions.getInstance().getValue(email);
+
       if (!pp) {
         throw new Error(bodyMessages.mailDoesntExist);
       }
@@ -135,16 +155,26 @@ class LoginController {
 
       this.loginService.verifyCode(code, pp);
 
-      pp.verified = true;
+      this.sessionService.setValue(email, {
+        ...pp,
+        verified: true,
+      });
 
       responseBody.message = bodyMessages.successfulCode;
     } catch (error) {
+      this.sessionService.setValue(email, {
+        ...pp,
+        count: pp.count + 1,
+      } as ITwoStepCode);
       responseBody.status = httpCode.BAD_REQUEST;
       responseBody.message = error.message;
     } finally {
-      console.log(Sessions.getInstance().getValue(email));
-      if (Sessions.getInstance().getValue(email).count > 3) {
-        Sessions.getInstance().removeData(email);
+      console.log("Quitando datos");
+      if (pp.count > 5) {
+        this.sessionService.setValue(email, {
+          ...pp,
+          codeError: Date.now(),
+        } as ITwoStepCode);
       }
     }
 
@@ -186,7 +216,7 @@ class LoginController {
     password: string
   ): Promise<void> {
     const login = await this.loginService.login(email, password);
-    Sessions.getInstance().removeData(email);
+    this.sessionService.removeValue(email);
     responseBody.message = login.message;
     responseBody.body = login.body;
   }
@@ -197,13 +227,14 @@ class LoginController {
     try {
       const code = this.loginService.sendCodeEmail(req.body.email);
 
-      Sessions.getInstance().addData(req.body.email, {
+      this.sessionService.setValue(req.body.email, {
         email: req.body.email,
         code: code,
         creation: Date.now(),
         count: 0,
+        countLogin: 0,
         verified: false,
-      });
+      } as ITwoStepCode);
 
       responseBody.message = bodyMessages.dobleFac;
       responseBody.status = httpCode.PAGE_EXPIRED;
@@ -217,6 +248,24 @@ class LoginController {
       status: responseBody.status,
       message: responseBody.message,
     });
+  }
+
+  private checkCodeError(pp: ITwoStepCode, email: string) {
+    if (
+      pp.codeError &&
+      checkJailTime(pp.codeError) &&
+      pp.loginError &&
+      checkJailTime(pp.loginError)
+    ) {
+      throw Error("Cuenta bloqueada, espere unos minutos");
+    } else {
+      this.sessionService.setValue(email, {
+        ...pp,
+        codeError: undefined,
+        loginError: undefined,
+        count: 0,
+      } as ITwoStepCode);
+    }
   }
 }
 

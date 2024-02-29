@@ -1,29 +1,23 @@
 import { ILoginService } from "./loginService.interface";
 
+import { UserRecord } from "firebase-admin/lib/auth/user-record";
 import {
-  signInWithEmailAndPassword,
-  getAuth,
-  User,
-  updatePassword,
   GoogleAuthProvider,
-  signInWithPopup,
-  getAdditionalUserInfo,
+  User,
   UserCredential,
-  signInWithRedirect,
+  getAdditionalUserInfo,
+  getAuth,
   sendPasswordResetEmail,
-  PhoneMultiFactorGenerator,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  updatePassword
 } from "firebase/auth";
-import { app, firebaseAdmin } from "../../../helpers/init-firebase";
-import { codeResponse, successResponse } from "src/helpers/responseType";
-import qrcode from "qrcode";
-import { transporter } from "../../../helpers/email";
+import { successResponse } from "src/helpers/responseType";
 import { IResponseBody } from "src/interfaces/response.interface";
 import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
-import { response } from "express";
-import { rejects } from "assert";
-import { DB_DUMMY } from "../../../helpers/db-dummy";
-import { UserRecord } from "firebase-admin/lib/auth/user-record";
 import { bodyMessages, httpCode } from "../../../config/const";
+import { transporter } from "../../../helpers/email";
+import { app, firebaseAdmin } from "../../../helpers/init-firebase";
 var CodeGenerator = require("node-code-generator");
 
 class LoginService implements ILoginService {
@@ -142,11 +136,8 @@ class LoginService implements ILoginService {
     }
 
     if (code != verificationCode.code) {
-      verificationCode.count += 1;
       throw new Error(bodyMessages.wrongCode);
     }
-
-    console.log(verificationCode);
 
     return true;
   }

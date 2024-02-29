@@ -1,25 +1,24 @@
-import { ITwoStepCode } from "src/interfaces/two-step-code.interface";
 
 export let session: any[] = [];
 
 export type SessionsCookies = {
-  [key: string]: ITwoStepCode;
+  [key: string]: string;
 };
 
-export class Sessions {
-  private static session: Sessions;
+export class SessionsLocal {
+  private static session: SessionsLocal;
   private cookies: SessionsCookies = {};
   private constructor() {}
 
   public static getInstance() {
-    if (!Sessions.session) {
-      Sessions.session = new Sessions();
+    if (!SessionsLocal.session) {
+      SessionsLocal.session = new SessionsLocal();
     }
 
-    return Sessions.session;
+    return SessionsLocal.session;
   }
 
-  public addData(key: string, value: ITwoStepCode) {
+  public addData(key: string, value: string) {
     this.cookies[key] = value;
   }
 
