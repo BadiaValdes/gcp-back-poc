@@ -2,6 +2,7 @@ import { Router } from 'express';
 import docuSignRoutes from './docu-sign/docu-sign.routes';
 import folioRouter from './folio/folioRouter';
 import loginRouter from './login/loginRouter';
+import pdfRouter from './pdf-tasks/pdfRouter';
 import { IRouter } from './router.interface';
 import userRouter from './user/userRouter';
 
@@ -14,6 +15,7 @@ class BaseRouter implements IRouter{// eslint-disable-line
         router.use('/login', loginRouter.routes);
         router.use('/folios', folioRouter.routes);
         router.use('/docusign', docuSignRoutes.routes);
+        router.use('/pdf', pdfRouter.routes);
         router.use('/user', userRouter.routes);
         return router;
     }

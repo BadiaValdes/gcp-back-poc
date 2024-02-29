@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { bodyMessages, responseBodyBase } from "src/config/const";
+import { bodyMessages, responseBodyBase } from "../../../config/const";
 import userService from "../services/imp/user.service";
 import { IUserService } from "../services/user.interface.service";
 

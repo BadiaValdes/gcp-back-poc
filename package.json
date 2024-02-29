@@ -52,6 +52,8 @@
     "mysql": "^2.18.1",
     "node-code-generator": "^1.0.3",
     "nodemailer": "^6.9.8",
+    "pdf-lib": "^1.17.1",
+    "pdf.js-extract": "^0.2.1",
     "qrcode": "^1.5.3",
     "reflect-metadata": "^0.2.1",
     "speakeasy": "^2.0.0",

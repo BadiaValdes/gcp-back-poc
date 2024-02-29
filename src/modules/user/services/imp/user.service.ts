@@ -1,6 +1,6 @@
 import { UserRecord } from "firebase-admin/lib/auth/user-record";
-import { bodyMessages } from "src/config/const";
-import { IUserData } from "src/interfaces/user/user-data.interface";
+import { bodyMessages } from "../../../../config/const";
+import { IUserData } from "../../../../interfaces/user/user-data.interface";
 import { IFirebaseRepository } from "../../repository/firebase.interface.repository";
 import firebaseRepository from "../../repository/imp/firebase.repository";
 import { IUserService } from "../user.interface.service";

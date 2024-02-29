@@ -1,5 +1,5 @@
-import { initializeApp } from 'firebase/app';
 import * as admin from 'firebase-admin';
+import { initializeApp } from 'firebase/app';
 
 const firebaseConfig = {
     apiKey: "AIzaSyBmsUlsWQd4eX0rTKrslWnp7CGTef6jSNs", //apikey
@@ -8,7 +8,7 @@ const firebaseConfig = {
 
 export const firebaseAdmin = admin.initializeApp({
     projectId: "cdt-principal",
-    // credential: admin.credential.cert("C:/Users/JE/Videos/mio/cdt-principal-d917cdc8f715.json"),
+    credential: admin.credential.cert("C:/Users/JE/Videos/mio/cdt-principal-d917cdc8f715.json"),
 });
   
 export const app = initializeApp(firebaseConfig);

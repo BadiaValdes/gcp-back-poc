@@ -1,6 +1,6 @@
 import { UserRecord } from "firebase-admin/lib/auth/user-record";
+import { firebaseAdmin } from "../../../../helpers/init-firebase";
 import { IFirebaseRepository } from "../firebase.interface.repository";
-import { firebaseAdmin } from "src/helpers/init-firebase";
 
 class FirebaseRepository implements IFirebaseRepository {
   getUser(email: string): Promise<UserRecord> {
